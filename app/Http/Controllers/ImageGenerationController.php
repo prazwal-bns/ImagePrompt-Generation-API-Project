@@ -4,9 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\GeneratePromptRequest;
+use Illuminate\Support\Str;
+use App\Services\OpenAiService;
 
 class ImageGenerationController extends Controller
 {
+
+    public function __construct(private OpenAiService $openAiService){
+
+    }
+
     public function index()
     {
 
@@ -23,8 +30,20 @@ class ImageGenerationController extends Controller
         $sanitizedName = preg_replace('/[^a-zA-Z0-9]/', '_', pathinfo($originalFileName, PATHINFO_FILENAME));
 
         $extension = $image->getClientOriginalExtension();
-        $safeFileName = $sanitizedName . '_' . time() . '.' . $extension;
+        $safeFileName = $sanitizedName . '_' . Str::random(10) . '.' . $extension;
 
-        $image->storeAs('uploads/images', $safeFileName, 'public');
+        $imagePath = $image->storeAs('uploads/images', $safeFileName, 'public');
+
+        $generatedPrompt = $this->openAiService->generatePromptFromImage($image);
+
+        $imageGeneration = $user->imageGenerations()->create([
+            'image_path' => $imagePath,
+            'generated_prompt' => $generatedPrompt,
+            'original_file_name' => $originalFileName,
+            'file_size' => $image->getSize(),
+            'mime_type' => $image->getClientMimeType(),
+        ]);
+
+        return response()->json($imageGeneration,201);
     }
 }
