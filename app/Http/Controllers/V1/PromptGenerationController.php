@@ -20,6 +20,14 @@ class PromptGenerationController extends Controller
 
     }
 
+    /**
+     * Get All Prompt Generations
+     *
+     * Get all prompt generations for the authenticated user
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @authenticated
+     */
     public function index()
     {
         $user = request()->user();
@@ -27,6 +35,15 @@ class PromptGenerationController extends Controller
         return ImageGenerationResource::collection($imageGenerations);
     }
 
+    /**
+     * Generate Prompt
+     * 
+     * Generate a descriptive prompt from an image
+     *
+     * @param GeneratePromptRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     * @authenticated
+     */
     public function store(GeneratePromptRequest $request)
     {
         try {
