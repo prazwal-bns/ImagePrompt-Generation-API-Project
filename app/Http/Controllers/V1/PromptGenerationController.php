@@ -31,7 +31,26 @@ class PromptGenerationController extends Controller
     public function index()
     {
         $user = request()->user();
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not authenticated. Please login to continue.',
+            ], 401);
+        }
+
         $imageGenerations = $user->imageGenerations()->latest()->paginate(10);
+
+        // $imageGenerations = [
+        //     'id' => 1,
+        //     'image_url' => 'https://via.placeholder.com/150',
+        //     'generated_prompt' => 'A beautiful sunset over a calm ocean',
+        //     'original_file_name' => 'sunset.jpg',
+        //     'file_size' => 1000,
+        //     'mime_type' => 'image/jpeg',
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        // ];
+        // return response()->json($imageGenerations);
+
         return ImageGenerationResource::collection($imageGenerations);
     }
 
@@ -48,6 +67,11 @@ class PromptGenerationController extends Controller
     {
         try {
             $user = $request->user();
+            if (!$user) {
+                return response()->json([
+                    'message' => 'User not authenticated. Please login to continue.',
+                ], 401);
+            }
 
             // Validate the request
             $image = $request->file('image');
