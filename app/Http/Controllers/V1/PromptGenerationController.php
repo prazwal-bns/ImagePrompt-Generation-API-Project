@@ -36,17 +36,17 @@ class PromptGenerationController extends Controller
             $user = request()->user();
             $query = $user->imageGenerations();
 
-            // for searching any field the generated prompt
+            // Apply Searching: http://127.0.0.1:8000/api/v1/prompt-generations?per_page=25&search=foreground
             if($request->has('search') && !empty($request->get('search'))){
                 $query->where('generated_prompt', 'like', '%' . $request->get('search') . '%');
             }
 
             // for gettting specific page with per page and page number: http://127.0.0.1:8000/api/v1/prompt-generations?per_page=25&page=2
-            // $imageGenerations = $query->latest()->paginate($request->get('per_page'));
+            $imageGenerations = $query->latest()->paginate($request->get('per_page'));
 
 
             // for getting specific page: http://127.0.0.1:8000/api/v1/prompt-generations?page=3
-            $imageGenerations = $query->latest()->paginate(10);
+            // $imageGenerations = $query->latest()->paginate(10);
     
             return ImageGenerationResource::collection($imageGenerations);
         } else {
