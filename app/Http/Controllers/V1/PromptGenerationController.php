@@ -62,6 +62,9 @@ class PromptGenerationController extends Controller
                 $sortDirection = 'desc';
             }
 
+            // for descending order: http://127.0.0.1:8000/api/v1/prompt-generations?per_page=5&sort=-created_at 
+            // for ascending order: http://127.0.0.1:8000/api/v1/prompt-generations?per_page=5&sort=created_at 
+
             $query->orderBy($sortField, $sortDirection);
 
 
