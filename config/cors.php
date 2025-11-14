@@ -20,6 +20,11 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
+    // 'allowed_origins' => ['*'], // allow all origins 
+
+    // 'allowed_origins' => ['http://localhost:3000'], // but if we are only allowing specific origins, we can use this
+
+
 
     'allowed_origins_patterns' => [],
 
