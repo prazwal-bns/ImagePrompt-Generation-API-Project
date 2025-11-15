@@ -154,4 +154,31 @@ test('login endpoint requires guest middleware',function(){
 
     // this should redirect or return 302/401 depending on middleware configuration
     $response->assertStatus(302);
-})->only();
+});
+
+test('login response contains correct user data structure', function () {
+    $user = User::factory()->create([
+        'name' => 'Ram Bahadur',
+        'email' => 'user1test@gmail.com',
+        'password' => bcrypt('password')
+    ]);
+
+    $response = $this->postJson('/api/login', [
+        'email' => 'user1test@gmail.com',
+        'password' => 'password'
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJson([
+            'user' => [
+                'id' => $user->id,
+                'name' => 'Ram Bahadur',
+                'email' => 'user1test@gmail.com'
+            ]
+        ]);
+
+    // verify password is not returned in response
+    $responseData = $response->json();
+    expect($responseData['user'])->not->toHaveKey('password');
+    expect($responseData['user'])->not->toHaveKey('remember_token');
+});
