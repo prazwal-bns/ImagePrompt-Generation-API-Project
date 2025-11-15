@@ -47,4 +47,22 @@ test('users cannot login with invalid credentials via api.', function () {
         ->assertJsonValidationErrors(['email']);
 
     $this->assertGuest();
+});
+
+
+test('login requires valid email format.', function () {
+    $user = User::factory()->create([
+        'email' => 'user1test@gmail.com',
+        'password' => bcrypt('password')
+    ]);
+
+    $response = $this->postJson('/api/login', [
+        'email' => 'aforapple.com',
+        'password' => 'password'
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['email']);
+
+    $this->assertGuest();
 })->only();
