@@ -9,6 +9,9 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Routing\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -39,6 +42,10 @@ class AppServiceProvider extends ServiceProvider
             $openApi->secure(
                 SecurityScheme::http('bearer', 'BearerAuth')
             );
+        });
+
+        RateLimiter::for('api', function(Request $request){
+            return Limit::perMinute(2)->by($request->user()?->id ?: $request->ip);
         });
     }
 }
